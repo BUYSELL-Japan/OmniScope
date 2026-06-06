@@ -64,7 +64,7 @@ class CaptureEngine:
 
     def __init__(
         self,
-        debug_host: str = "localhost",
+        debug_host: str = "127.0.0.1",
         debug_port: int = 9222,
         output_dir: Optional[Path] = None,
     ):
@@ -332,7 +332,7 @@ class CaptureEngine:
 
 def capture_sync(
     monitor_index: int,
-    debug_host:  str = "localhost",
+    debug_host:  str = "127.0.0.1",
     debug_port:  int = 9222,
     output_dir:  Optional[Path] = None,
     save_locally: bool = True,
@@ -349,7 +349,7 @@ def capture_sync(
 
 
 def check_connection_sync(
-    host: str = "localhost",
+    host: str = "127.0.0.1",
     port: int = 9222,
 ) -> bool:
     """CDP 接続チェックの同期版（UIのヘルスチェック用）"""

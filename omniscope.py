@@ -117,7 +117,7 @@ CONFIG_PATH = BASE_DIR / "config.yaml"
 def _load_config() -> dict:
     """config.yaml を読み込み、デフォルト値とマージして返す"""
     defaults = {
-        "chrome":   {"debug_host": "localhost", "debug_port": 9222},
+        "chrome":   {"debug_host": "127.0.0.1", "debug_port": 9222},
         "capture":  {"output_dir": "screenshots", "save_locally": True},
         "monitors": {"auto_detect": True, "default": 2},
         "hotkeys":  {

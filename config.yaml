@@ -1,40 +1,36 @@
-# OmniScope 設定ファイル
-# ここを変更することで、コードを書き換えずに動作をカスタマイズできます
-
-# ─── Chrome CDP 設定 ───────────────────────────────────────────────
+capture:
+  output_dir: screenshots
+  save_locally: true
 chrome:
   debug_host: localhost
-  debug_port: 9222          # launch_chrome.bat と一致させること
-
-# ─── キャプチャ設定 ──────────────────────────────────────────────────
-capture:
-  output_dir: screenshots   # 保存先ディレクトリ（相対パス）
-  save_locally: true        # true=ディスクにも保存 / false=Geminiのみに送信
-
-# ─── モニター設定 ──────────────────────────────────────────────────
-monitors:
-  auto_detect: true         # true=自動検出 / false=下記の手動設定を使用
-  default: 2                # 起動時のデフォルト対象モニター番号
-
-  # auto_detect: false の場合に使用する手動設定
-  # ご自身のマルチモニター環境に合わせて座標を変更してください
-  # 座標は Windows の「ディスプレイ設定」で確認できます
-  manual:
-    1: { x:    0, y: 0, width: 1680, height: 1050 }
-    2: { x: 1680, y: 0, width: 1680, height: 1050 }
-    3: { x: 3360, y: 0, width: 1680, height: 1050 }
-
-# ─── ホットキー設定 ─────────────────────────────────────────────────
-hotkeys:
-  capture:   "ctrl+shift+s"   # キャプチャ実行
-  monitor_1: "ctrl+shift+1"   # モニター1を対象に
-  monitor_2: "ctrl+shift+2"   # モニター2を対象に
-  monitor_3: "ctrl+shift+3"   # モニター3を対象に
-
-# ─── Gemini API 設定 ────────────────────────────────────────────────
+  debug_port: 9222
 gemini:
-  model: "gemini-2.0-flash"
-  api_key: ""               # ここに記述するか、GUIで入力してください
-  auto_analyze: true        # キャプチャ後に自動でGeminiに送信するか
-  default_prompt: "このWebページのスクリーンショットを分析してください。レイアウト、コンテンツ、主要な情報を詳しく説明してください。"
-  system_prompt: ""         # RWSガイドライン等のシステムプロンプト
+  api_key: ''
+  auto_analyze: true
+  default_prompt: このWebページのスクリーンショットを分析してください。レイアウト、コンテンツ、主要な情報を詳しく説明してください。
+  model: gemini-2.0-flash
+  system_prompt: ''
+hotkeys:
+  capture: ctrl+shift+s
+  monitor_1: ctrl+shift+1
+  monitor_2: ctrl+shift+2
+  monitor_3: ctrl+shift+3
+monitors:
+  auto_detect: true
+  default: 2
+  manual:
+    1:
+      height: 1050
+      width: 1680
+      x: 0
+      y: 0
+    2:
+      height: 1050
+      width: 1680
+      x: 1680
+      y: 0
+    3:
+      height: 1050
+      width: 1680
+      x: 3360
+      y: 0
