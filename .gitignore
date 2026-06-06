@@ -1,0 +1,35 @@
+# ── Python ────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# ── OmniScope 生成ファイル ─────────────────────
+screenshots/          # キャプチャ保存先（個人データ）
+
+# ── 環境・設定（機密情報を含む可能性）──────────
+# config.yaml は API キーが空の状態でコミットする
+# ローカル専用の設定は別ファイルに保存してください
+.env
+*.env.local
+
+# ── IDE・エディタ ─────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS 生成ファイル ───────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Playwright ────────────────────────────────
+playwright/.local-browsers/

@@ -1,0 +1,9 @@
+playwright>=1.44.0
+screeninfo>=0.8.1
+keyboard>=0.13.5
+pywin32>=306
+google-genai>=0.8.0
+Pillow>=10.0.0
+pyyaml>=6.0.1
+winotify>=1.1.0
+psutil>=5.9.0
