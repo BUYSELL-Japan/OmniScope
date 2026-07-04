@@ -42,10 +42,27 @@ def get_monitor_center(monitor_index: int) -> tuple[int, int]:
         m = monitors[monitor_index - 1]
     return m.x + m.width // 2, m.y + m.height // 2
 
-def execute_chrome_macro(monitor_index: int):
+def get_clipboard_text():
+    win32clipboard.OpenClipboard()
+    try:
+        if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_UNICODETEXT):
+            data = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
+            return data
+        elif win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_TEXT):
+            data = win32clipboard.GetClipboardData(win32clipboard.CF_TEXT)
+            return data.decode('utf-8')
+        return ""
+    except Exception as e:
+        print(f"Clipboard read error: {e}")
+        return ""
+    finally:
+        win32clipboard.CloseClipboard()
+
+def execute_chrome_macro(monitor_index: int) -> str:
     """
     指定モニターの中央をクリックしてChromeをアクティブにし、
-    F12 -> Ctrl+Shift+P -> full -> Enter を送信する。
+    URLをコピー後、F12 -> Ctrl+Shift+P -> full -> Enter を送信する。
+    戻り値: 取得したURL文字列（失敗時は空文字）
     """
     # 指定モニターの中央をクリックしてフォーカスを当てる
     cx, cy = get_monitor_center(monitor_index)
@@ -55,6 +72,24 @@ def execute_chrome_macro(monitor_index: int):
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, cx, cy, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, cx, cy, 0, 0)
     time.sleep(0.5)
+
+    # --- URL取得処理 ---
+    # Ctrl + L でアドレスバーフォーカス
+    send_hotkey(VK_CONTROL, 0x4C) # VK_L
+    time.sleep(0.3)
+    
+    # Ctrl + C でURLコピー
+    send_hotkey(VK_CONTROL, 0x43) # VK_C
+    time.sleep(0.3)
+    
+    url = get_clipboard_text()
+    
+    # アドレスバーからフォーカスを外し、ページ本文へフォーカスを戻す
+    # (同じ場所をもう一度クリック)
+    win32api.SetCursorPos((cx, cy))
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, cx, cy, 0, 0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, cx, cy, 0, 0)
+    time.sleep(0.3)
 
     # 元のマウス位置に戻す
     win32api.SetCursorPos(original_pos)
@@ -84,6 +119,8 @@ def execute_chrome_macro(monitor_index: int):
     
     # 撮影が開始され、ダウンロードフォルダに入るまで待つ
     # 閉じるとキャプチャがキャンセルされる場合があるので閉じないでおく（後で手動か自動で閉じる）
+    
+    return url
 
 def send_image_to_clipboard(image_path: str) -> bool:
     """

@@ -8,6 +8,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from macro_engine import execute_chrome_macro, send_image_to_clipboard
+import ai_extractor
+from ai_extractor import check_connection
 
 # --- Configuration & Theme ---
 C = {
@@ -52,8 +54,11 @@ class OmniScopeApp:
         
         self.downloads_path = str(Path.home() / "Downloads")
         self.target_monitor = 1 # デフォルトのモニター
+        self.last_url = ""
         self._build_ui()
         self._start_watchdog()
+        # 起動時に TOA Searcher への接続確認を非同期で実行
+        threading.Thread(target=check_connection, daemon=True).start()
 
     def _build_ui(self):
         main_frame = tk.Frame(self.root, bg=C["bg"])
@@ -97,15 +102,19 @@ class OmniScopeApp:
         self.observer.start()
 
     def _on_new_png(self, filepath):
-        self.root.after(0, lambda: self.status_lbl.config(text="📥 ダウンロードを検知、コピー中...", fg=C["warning"]))
+        self.root.after(0, lambda: self.status_lbl.config(text="📥 ダウンロードを検知、コピーと抽出中...", fg=C["warning"]))
         
         # Chromeがファイルの書き込みを終えるまで少し待つ
         time.sleep(1.0)
         
         success = send_image_to_clipboard(filepath)
         if success:
-            msg = "✅ コピー完了！ (GeminiでCtrl+V)"
+            msg = "✅ コピー完了！ AI抽出を開始します..."
             color = C["success"]
+            
+            # AI抽出を非同期で実行
+            url = self.last_url
+            threading.Thread(target=ai_extractor.extract_and_send, args=(filepath, url), daemon=True).start()
         else:
             msg = "❌ コピー失敗 (ファイルが開けません)"
             color = C["error"]
@@ -119,7 +128,8 @@ class OmniScopeApp:
         
         def _task():
             try:
-                execute_chrome_macro(self.target_monitor)
+                self.last_url = execute_chrome_macro(self.target_monitor)
+                print(f"Captured URL: {self.last_url}")
             except Exception as e:
                 self.root.after(0, lambda: self.status_lbl.config(text=f"❌ エラー: {e}", fg=C["error"]))
             finally:
